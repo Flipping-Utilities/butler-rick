@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as Cheerio from 'cheerio';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import {
+  CommandInteraction,
+  MessageActionRow,
+  MessageButton,
+  MessageEmbed,
+} from 'discord.js';
 import {
   Autocomplete,
   Context,
@@ -8,6 +13,7 @@ import {
   SlashCommand,
   StringOption,
 } from 'necord';
+import { EmbedService } from 'src/discord/embed.service';
 import { WikiPageAutocomplete } from '../autocomplete/wikipage.autocomplete';
 import { WikiService } from '../wiki/wiki.service';
 
@@ -24,7 +30,10 @@ class WikiSearchCommandOptions {
 export class WikiCommand {
   logger = new Logger(WikiCommand.name);
 
-  constructor(private readonly wikiService: WikiService) {}
+  constructor(
+    private readonly wikiService: WikiService,
+    private readonly embedService: EmbedService,
+  ) {}
 
   @SlashCommand('wiki', 'Search for something on the wiki')
   @Autocomplete(WikiPageAutocomplete)
@@ -34,12 +43,20 @@ export class WikiCommand {
   ) {
     await interaction.deferReply();
 
-    const embed = new MessageEmbed();
+    const embed = this.embedService.createEmbed({ interaction });
     embed.setTitle(`${userProvidedOptions?.query}`);
     embed.setDescription(
-      `Click here to view the wiki search result for ${userProvidedOptions?.query}`,
+      `Click here to view the wiki search result for \`${userProvidedOptions?.query.replace(
+        /\`/g,
+        '',
+      )}\``,
     );
     embed.setThumbnail('https://oldschool.runescape.wiki/images/Wiki.png');
+    embed.setURL(
+      `https://oldschool.runescape.wiki/?search=${encodeURIComponent(
+        userProvidedOptions.query,
+      )}`,
+    );
 
     const candidatePage = this.wikiService.getSlimPageByName(
       userProvidedOptions.query,
@@ -70,7 +87,7 @@ export class WikiCommand {
 
         const content = page.content;
         const $ = Cheerio.load(content);
-        const description = $('p').first().text();
+        const description = $('p').text();
         if (description.length > 400) {
           embed.setDescription(description.slice(0, 400) + '...');
         } else {
@@ -78,6 +95,12 @@ export class WikiCommand {
         }
       }
     }
-    interaction.followUp({ embeds: [embed] });
+    const button = new MessageButton()
+      .setLabel('View on the Wiki')
+      .setStyle(5)
+      .setURL(embed.url);
+    const row = new MessageActionRow();
+    row.addComponents(button);
+    interaction.followUp({ embeds: [embed], components: [row] });
   }
 }
