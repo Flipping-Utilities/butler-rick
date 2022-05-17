@@ -9,10 +9,14 @@ export interface WikiPageWithContent {
   content: string;
   rawContent: string;
   displaytitle: string;
+  redirects?: string[];
   properties: { name: string; value: string }[];
 }
 
-export type WikiPageSlim = Pick<WikiPageWithContent, 'pageid' | 'title'>;
+export type WikiPageSlim = Pick<
+  WikiPageWithContent,
+  'pageid' | 'title' | 'redirects'
+>;
 
 @Injectable()
 export class WikiService {

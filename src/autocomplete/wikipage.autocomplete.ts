@@ -22,7 +22,7 @@ export class WikiPageAutocomplete implements TransformOptions {
       findAllMatches: true,
       fieldNormWeight: 1,
       threshold: 0.3,
-      keys: ['title'],
+      keys: ['title', 'redirects'],
     });
   }
 
