@@ -27,7 +27,7 @@
     "cheerio": "^1.0.0-rc.10",
     "discord.js": "^13.7.0",
     "fuse.js": "^6.6.2",
-    "necord": "^4.2.7",
+    "necord": "^4.3.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

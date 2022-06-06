@@ -3,18 +3,17 @@ import * as Cheerio from 'cheerio';
 import {
   CommandInteraction,
   MessageActionRow,
-  MessageButton,
-  MessageEmbed,
+  MessageButton
 } from 'discord.js';
 import {
   Autocomplete,
   Context,
   Options,
   SlashCommand,
-  StringOption,
+  StringOption
 } from 'necord';
-import { EmbedService } from 'src/discord/embed.service';
 import { WikiPageAutocomplete } from '../autocomplete/wikipage.autocomplete';
+import { EmbedService } from '../discord/embed.service';
 import { WikiService } from '../wiki/wiki.service';
 
 class WikiSearchCommandOptions {
